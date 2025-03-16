@@ -40,7 +40,7 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           cd sample_node/
-          git pull origin main
+          git pull origin ${{ github.ref_name }}
           npm install --omit=dev
           pm2 restart demo_api_server || pm2 start server.js --name "demo_api_server"
           sudo systemctl restart nginx
