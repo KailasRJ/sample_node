@@ -25,13 +25,6 @@ jobs:
     - name: Install Dependencies
       run: npm install
 
-    - name: Create .env file
-      run: |
-        cat <<EOF > .env
-        PORT=${{ vars.PORT }}
-        CUSTOM_MESSAGE=${{ vars.CUSTOM_MESSAGE }}
-        EOF
-
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
       with:
@@ -40,6 +33,10 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           cd sample_node/
+          cat <<EOF > .env
+          PORT=${{ vars.PORT }}
+          CUSTOM_MESSAGE=${{ vars.CUSTOM_MESSAGE }}
+          EOF
           git pull origin ${{ github.ref_name }}
           npm install --omit=dev
           pm2 restart demo_api_server || pm2 start server.js --name "demo_api_server"
