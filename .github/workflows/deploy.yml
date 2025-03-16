@@ -4,10 +4,14 @@ on:
   push:
     branches:
       - main
+      - dev
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'prod' || github.ref == 'refs/heads/dev' && 'dev' }}
 
     steps:
     - name: Checkout Code
@@ -20,6 +24,13 @@ jobs:
 
     - name: Install Dependencies
       run: npm install
+
+    - name: Create .env file
+      run: |
+        cat <<EOF > .env
+        PORT=${{ vars.PORT }}
+        CUSTOM_MESSAGE=${{ vars.CUSTOM_MESSAGE }}
+        EOF
 
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
