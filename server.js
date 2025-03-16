@@ -4,7 +4,7 @@ const PORT = process.env.PORT || 3000;
 
 // Simple Route
 app.get('/', (req, res) => {
-    res.send(`Hello World! 🚀 Kailas's demo server is running!!`);
+    res.send(`Hello World! 🚀 Kailas's demo server is running!`);
 });
 
 // Health Check Route
