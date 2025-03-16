@@ -4,10 +4,14 @@ on:
   push:
     branches:
       - main
+      - dev
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'prod' || github.ref == 'refs/heads/dev' && 'dev' }}
 
     steps:
     - name: Checkout Code
@@ -29,7 +33,11 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           cd sample_node/
-          git pull origin main
+          cat <<EOF > .env
+          PORT=${{ vars.PORT }}
+          CUSTOM_MESSAGE=${{ vars.CUSTOM_MESSAGE }}
+          EOF
+          git pull origin ${{ github.ref_name }}
           npm install --omit=dev
           pm2 restart demo_api_server || pm2 start server.js --name "demo_api_server"
           sudo systemctl restart nginx
